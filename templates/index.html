@@ -11,9 +11,13 @@
 
     <h2>Latest Blog posts</h2>
     <ul>
-        {%for post in posts%}
-            <li>{{ post.title }}</li>
-        {%endfor%}
+        {% for post in posts %}
+            <li>
+                <a href="{{ url_for('post', post_id=post.id) }}">{{ post.title }}</a>
+            </li>
+        {% endfor %}
     </ul>
+    
+    <a href="{{ url_for('create_post') }}">Create a New Post</a>
 </body>
 </html>
