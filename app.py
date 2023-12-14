@@ -1,5 +1,6 @@
 from flask import Flask, redirect, render_template, request, url_for
 from  flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
 
 app = Flask(__name__)
 
@@ -8,16 +9,22 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-class Post(db.Model):
+class Post(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    content = db.Column(db.Text, nullable=False)
+    posts = db.relationship('Post',backref = 'author',lazy=True)
 
 @app.route('/')
 def home():
 
-    posts = Post.query.all()
-    print(posts)
+    posts = Post.query.all() 
 
     return render_template('index.html', message = 'This is message', posts = posts)
 
