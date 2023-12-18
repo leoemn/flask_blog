@@ -1,27 +1,7 @@
-from flask import Flask, redirect, render_template, url_for, request, flash
-from  flask_sqlalchemy import SQLAlchemy
-from forms import RegistrationForm, LoginForm
-
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'AbCDefGHIjklmnOPqRsTuVwxyZ'
-
-db = SQLAlchemy(app)
-
-
-# Define the Post model
-class Post(db.Model):
-    id = db.Column(db.Integer, primary_key = True)
-    title = db.Column(db.String(100), nullable = False)
-    content = db.Column(db.Text, nullable = False)
-
-# Define the User model
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key =  True)
-    username = db.Column(db.String(100), unique = True, nullable = False)
-    email = db.Column(db.String(120), unique = True, nullable = False)
-    password = db.Column(db.String(60), nullable = False)
+from flask import redirect, render_template, url_for, request, flash
+from blog import app
+from blog.forms import RegistrationForm, LoginForm
+from blog.models import User,Post
 
 # Route for the home page
 @app.route('/')
@@ -46,7 +26,7 @@ def post(post_id):
     if not selected_post:
         return render_template('404.html')
     
-    return render_template('post.html', post = selected_post)
+    return render_template('post.html', post =  selected_post)
 
 # Route for creating a new post 
 @app.route('/create_post', methods=['GET', 'POST'])
@@ -85,8 +65,3 @@ def register():
         return redirect('/')
 
     return render_template('register.html', title = 'SignUp', form = form)
-
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-    app.run(debug = True)
