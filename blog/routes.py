@@ -1,13 +1,16 @@
 from flask import redirect, render_template, url_for, request, flash
-from blog import app,  db
+from blog import app,  db, bcrypt
 from blog.forms import RegistrationForm, LoginForm
 from blog.models import User,Post
+
+with app.app_context():
+    db.create_all()
 
 # Route for the home page
 @app.route('/')
 def home():
 
-    posts = Post.query.all() 
+    posts = Post.query.all()
 
     return render_template('index.html', posts = posts)
 
@@ -51,6 +54,9 @@ def create_post():
 def login():
     
     form = LoginForm()
+    if form.validate_on_submit():
+        with app.app_context():
+            user = User.query.get.filter_by(email = form.email.data).first()
 
     return render_template('login.html', title = 'Login', form = form)
 
@@ -61,6 +67,11 @@ def register():
     form = RegistrationForm()
 
     if form.validate_on_submit():
+        hashed_pw = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        with app.app_context():
+            user = User(username = form.username.data, email = form.email.data, password = hashed_pw)
+            db.session.add(user)
+            db.session.commit()
         flash(f"Account was created!",'success')
         return redirect('/')
 
