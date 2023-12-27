@@ -2,6 +2,7 @@ from flask import redirect, render_template, url_for, request, flash
 from blog import app,  db, bcrypt
 from blog.forms import RegistrationForm, LoginForm
 from blog.models import User,Post
+from flask_login import login_user
 
 with app.app_context():
     db.create_all()
@@ -54,11 +55,19 @@ def create_post():
 def login():
     
     form = LoginForm()
+
     if form.validate_on_submit():
-        with app.app_context():
-            user = User.query.get.filter_by(email = form.email.data).first()
+        user = User.query.filter_by(email = form.email.data).first()
+
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user, remember = form.remember.data)
+            flash('You have loged in', 'success')
+            return redirect(url_for('home'))
+        else:
+            flash('Login failed, check your email and password', 'danger')
 
     return render_template('login.html', title = 'Login', form = form)
+
 
 # Route for handling user sign up
 @app.route('/register', methods = ['GET', 'POST'])

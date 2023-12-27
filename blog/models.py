@@ -7,14 +7,14 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 # Define the Post model
-class Post(db.Model, UserMixin):
+class Post(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     title = db.Column(db.String(100), nullable = False)
     date_posted = db.Column(db.DateTime, nullable = False, default = datetime.utcnow)
     content = db.Column(db.Text, nullable = False)
 
 # Define the User model
-class User(db.Model):
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key =  True)
     username = db.Column(db.String(100), unique = True, nullable = False)
     email = db.Column(db.String(120), unique = True, nullable = False)
