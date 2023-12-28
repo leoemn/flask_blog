@@ -1,11 +1,8 @@
 from flask import redirect, render_template, url_for, request, flash
-from blog import app,  db, bcrypt
+from blog import app, db, bcrypt
 from blog.forms import RegistrationForm, LoginForm
 from blog.models import User,Post
-from flask_login import login_user
-
-with app.app_context():
-    db.create_all()
+from flask_login import current_user,login_user, logout_user
 
 # Route for the home page
 @app.route('/')
@@ -53,7 +50,9 @@ def create_post():
 # Route for handling user login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    
+    if current_user.is_authenticated:
+        return redirect(url_for('login'))
+
     form = LoginForm()
 
     if form.validate_on_submit():
@@ -72,16 +71,25 @@ def login():
 # Route for handling user sign up
 @app.route('/register', methods = ['GET', 'POST'])
 def register():
-    
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+
     form = RegistrationForm()
 
     if form.validate_on_submit():
         hashed_pw = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        with app.app_context():
-            user = User(username = form.username.data, email = form.email.data, password = hashed_pw)
-            db.session.add(user)
-            db.session.commit()
+        new_user = User()
+        new_user.username = form.username.data
+        new_user.email = form.email.data
+        new_user.password = hashed_pw
+        db.session.add(new_user)
+        db.session.commit()
         flash(f"Account was created!",'success')
-        return redirect('/')
+        return redirect('home')
 
     return render_template('register.html', title = 'SignUp', form = form)
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect('/')
