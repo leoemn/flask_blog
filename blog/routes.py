@@ -1,8 +1,8 @@
 from flask import redirect, render_template, url_for, request, flash
-from blog import app, db, bcrypt
+from blog import app, db, bcrypt,login_manager
 from blog.forms import RegistrationForm, LoginForm
 from blog.models import User,Post
-from flask_login import current_user,login_user, logout_user
+from flask_login import current_user,login_user, logout_user,login_required
 
 # Route for the home page
 @app.route('/')
@@ -85,7 +85,7 @@ def register():
         db.session.add(new_user)
         db.session.commit()
         flash(f"Account was created!",'success')
-        return redirect('home')
+        return redirect(url_for('home'))
 
     return render_template('register.html', title = 'SignUp', form = form)
 
@@ -93,3 +93,8 @@ def register():
 def logout():
     logout_user()
     return redirect('/')
+
+@app.route('/account')
+@login_required
+def account():
+    return render_template('account.html', title = 'Account')

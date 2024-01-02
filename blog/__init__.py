@@ -11,5 +11,4 @@ app.config['SECRET_KEY'] = 'AbCDefGHIjklmnOPqRsTuVwxyZ'
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
-
 from blog import routes
