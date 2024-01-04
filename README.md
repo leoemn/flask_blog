@@ -32,7 +32,7 @@ The main application file, such as `run.py`, is often the entry point of your ap
 First, we will create all the necessary HTML templates for our webapp, using jinja2. Flask uses the Jinja template library to render templates. In our application, we will use templates to render HTML which will display in the user's browser. In Flask, Jinja is configured to autoescape any data that is rendered in HTML templates.
 
 ## 2.routes.py
-In our routes.py we will define all theroutes and render our HTML templates. 
+In our routes.py we will define all the routes and render our HTML templates. 
 Use the @app.route decorator to define routes. Routes are URLs that your application can respond to:
 ```python
 @app.route('/')

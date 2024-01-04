@@ -1,3 +1,4 @@
+from email.mime import image
 from flask import redirect, render_template, url_for, request, flash
 from blog import app, db, bcrypt,login_manager
 from blog.forms import RegistrationForm, LoginForm
@@ -97,4 +98,5 @@ def logout():
 @app.route('/account')
 @login_required
 def account():
-    return render_template('account.html', title = 'Account')
+    image_file = url_for('static', filename = 'profile_pics/' + current_user.image_file)
+    return render_template('account.html', title = 'Account', image_file = image_file)
