@@ -1,7 +1,9 @@
-from email.mime import image
+import os
+import secrets
+from PIL import Image
 from flask import redirect, render_template, url_for, request, flash
 from blog import app, db, bcrypt,login_manager
-from blog.forms import RegistrationForm, LoginForm, UpdateAccountForm
+from blog.forms import RegistrationForm, LoginForm, UpdateAccountForm, PostForm
 from blog.models import User,Post
 from flask_login import current_user,login_user, logout_user,login_required
 
@@ -33,20 +35,13 @@ def post(post_id):
 # Route for creating a new post 
 @app.route('/create_post', methods=['GET', 'POST'])
 def create_post():
+    form = PostForm()
 
-    if request.method == 'POST':
-        title = request.form['title']
-        content = request.form['content']
-
-        new_post = Post()
-        new_post.title = title
-        new_post.content = content
-        db.session.add(new_post)
-        db.session.commit()
-
+    if form.validate_on_submit():
+        flash('Post has been created', 'success')
         return redirect(url_for('home'))
     
-    return render_template('create_post.html')
+    return render_template('create_post.html', title = 'New Post', form = form)
 
 # Route for handling user login
 @app.route('/login', methods=['GET', 'POST'])
@@ -95,12 +90,29 @@ def logout():
     logout_user()
     return redirect('/')
 
+def save_image(form_image):
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_image.filename)
+    image_name = random_hex + f_ext
+    image_path = os.path.join(app.root_path, 'static/profile_pics', image_name)
+    
+    image_size = (125, 125)
+    i = Image.open(form_image)
+    i.thumbnail(image_size)
+    i.save(image_path)
+
+    return image_name
+
 @app.route('/account',methods = ['GET', 'POST'])
 @login_required
 def account():
     form = UpdateAccountForm()
 
     if form.validate_on_submit():
+        if form.image.data:
+            new_image = save_image(form.image.data)
+            current_user.image_file = new_image
+            
         current_user.username = form.username.data
         current_user.email = form.email.data
         db.session.commit()

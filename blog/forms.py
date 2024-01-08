@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, PasswordField, StringField, SubmitField
+from wtforms import BooleanField, PasswordField, StringField, SubmitField, TextAreaField
 from flask_wtf.file import FileField, FileAllowed
 from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
 from blog.models import User
@@ -35,7 +35,7 @@ class LoginForm(FlaskForm):
 class UpdateAccountForm(FlaskForm):
     username = StringField('Username', validators = [DataRequired(), Length(min = 2, max = 20)])
     email = StringField('Email', validators = [DataRequired(), Email()])
-    image = FileField('Update profile image', validators = [FileAllowed(['jpg','png'])])
+    image = FileField('Update profile image', validators = [FileAllowed(['jpg','png','jpeg'])])
     submit = SubmitField('Update')
 
     def validate_username(self, username):    
@@ -52,3 +52,7 @@ class UpdateAccountForm(FlaskForm):
             if email:
                 raise ValidationError('email already exist')
 
+class PostForm(FlaskForm):
+    title = StringField('title', validators = [DataRequired()])
+    content = TextAreaField('Content', validators = [DataRequired()])
+    submit = SubmitField('Post')
