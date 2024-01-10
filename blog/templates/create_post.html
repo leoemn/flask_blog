@@ -1,20 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Post</title>
-</head>
-<body>
-    <h1>Create a New Blog Post</h1>
-    <form method="POST" action="{{ url_for('create_post') }}">
-        <label for="title">Title:</label>
-        <input type="text" id="title" name="title" required>
-
-        <label for="content">Content:</label>
-        <textarea id="content" name="content" required></textarea>
-
-        <button type="submit">Create Post</button>
+{% extends 'layout.html' %}
+{% block content %}
+<div class="content-section">
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group">
+           <legend class="border-bottom mb-4">New Post</legend>
+           <div class="form-group">
+            {{ form.title.label(class="form-control-label") }}
+            {% if form.title.errors %}
+                {{ form.title(class="form-control form-control-lg is-invalid") }}
+                {% for error in form.title.errors %}
+                    <span> {{ error }}</span>
+                {% endfor %}
+            {% else %}
+                {{ form.title(class="form-control form-control-lg") }}
+            {% endif %}
+           </div>
+           <div class="form-group">
+            {{ form.content.label(class="form-control-label") }}
+            {% if form.content.errors %}
+                {{ form.content(class="form-control form-control-lg is-invalid") }}
+                {% for error in form.content.errors %}
+                    <span> {{ error }}</span>
+                {% endfor %}
+            {% else %}
+                {{ form.content(class="form-control form-control-lg") }}
+            {% endif %}
+           </div>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-outline-info") }}
+        </div>
     </form>
-</body>
-</html>
+</div>
+{% endblock content %}
+

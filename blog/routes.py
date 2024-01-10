@@ -38,6 +38,13 @@ def create_post():
     form = PostForm()
 
     if form.validate_on_submit():
+        new_post = Post()
+        new_post.title = form.title.data
+        new_post.content = form.content.data
+        new_post.user_id = current_user
+
+        db.session.add(new_post)
+        db.session.commit()
         flash('Post has been created', 'success')
         return redirect(url_for('home'))
     
